@@ -93,11 +93,10 @@ replace_value_resetprop() { # Replace a substring in a property's value
 # This function aims to delete or obfuscate specific strings within Android system properties,
 # by replacing them with random hexadecimal values which should match with the original string length.
 hexpatch_deleteprop() {
-    # resetprop-rs fast path: stealth delete via dictionary word replacement
     if [ -n "$RESETPROP_RS" ]; then
         for search_string in "$@"; do
             getprop | cut -d'[' -f2 | cut -d']' -f1 | grep "$search_string" | while read prop_name; do
-                "$RESETPROP_RS" --hexpatch-delete "$prop_name" 2>/dev/null && \
+                "$RESETPROP" --hexpatch-delete "$prop_name" 2>/dev/null && \
                     echo " ? Stealth-deleted $prop_name"
             done
         done
