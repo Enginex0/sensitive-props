@@ -39,7 +39,7 @@ _rp_get() {
 _rp_set() {
     if [ -n "$RESETPROP_RS" ]; then
         case "$1" in
-        persist.*) resetprop $(_build_resetprop_args "$1") "$2" ;;
+        persist.*) "$RESETPROP_RS" -p "$1" "$2" ;;
         ro.*)      "$RESETPROP_RS" --init "$1" "$2" ;;
         *)         "$RESETPROP_RS" "$1" "$2" ;;
         esac
