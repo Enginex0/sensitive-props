@@ -18,42 +18,33 @@ is_bool() {
     esac
 }
 
-# Detect resetprop-rs binary
 RESETPROP_RS=""
 [ -x "$MODPATH/resetprop-rs" ] && RESETPROP_RS="$MODPATH/resetprop-rs"
+RESETPROP="${RESETPROP_RS:-resetprop}"
 
-# Handle permissions without errors
 set_permissions() {
     [ -e "$1" ] && chmod "$2" "$1" &>/dev/null
 }
 
-# resetprop-rs / resetprop routing helpers
 _rp_get() {
-    if [ -n "$RESETPROP_RS" ]; then
-        "$RESETPROP_RS" "$1" 2>/dev/null
-    else
-        resetprop -v "$1"
-    fi
+    "$RESETPROP" "$1" 2>/dev/null
 }
 
+# --init is resetprop-rs only; magisk resetprop handles ro.* serial internally
 _rp_set() {
     if [ -n "$RESETPROP_RS" ]; then
         case "$1" in
-        persist.*) "$RESETPROP_RS" -p "$1" "$2" ;;
-        ro.*)      "$RESETPROP_RS" --init "$1" "$2" ;;
-        *)         "$RESETPROP_RS" "$1" "$2" ;;
+        persist.*) "$RESETPROP" -p "$1" "$2" ;;
+        ro.*)      "$RESETPROP" --init "$1" "$2" ;;
+        *)         "$RESETPROP" "$1" "$2" ;;
         esac
     else
-        resetprop $(_build_resetprop_args "$1") "$2"
+        "$RESETPROP" $(_build_resetprop_args "$1") "$2"
     fi
 }
 
 _rp_delete() {
-    if [ -n "$RESETPROP_RS" ]; then
-        "$RESETPROP_RS" -d "$1"
-    else
-        resetprop -n --delete "$1"
-    fi
+    "$RESETPROP" --delete "$1"
 }
 
 # Function to construct arguments for resetprop based on prop name
